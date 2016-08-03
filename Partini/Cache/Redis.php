@@ -6,7 +6,7 @@
  * Time: 上午8:42
  */
 
-namespace Cache;
+namespace Partini\Cache;
 
 
 class Redis implements CacheInterface

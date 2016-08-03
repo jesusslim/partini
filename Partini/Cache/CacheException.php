@@ -6,7 +6,7 @@
  * Time: 上午8:43
  */
 
-namespace Cache;
+namespace Partini\Cache;
 
 
 class CacheException extends \Exception

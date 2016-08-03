@@ -6,7 +6,7 @@
  * Time: 上午9:47
  */
 
-namespace Db;
+namespace Partini\Db;
 
 
 class DbException extends \Exception

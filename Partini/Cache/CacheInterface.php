@@ -6,7 +6,7 @@
  * Time: 下午3:29
  */
 
-namespace Cache;
+namespace Partini\Cache;
 
 
 interface CacheInterface
