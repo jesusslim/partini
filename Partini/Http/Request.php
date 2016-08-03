@@ -33,6 +33,10 @@ class Request
         }
     }
 
+    public function set($key,$v){
+        $this->base_req[$key] = $v;
+    }
+
     public function getUri(){
         return $this->uri;
     }

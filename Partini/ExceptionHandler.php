@@ -22,6 +22,6 @@ class ExceptionHandler
     }
 
     public function handleExceptions(Exception $e){
-        dump($e->getMessage());
+        var_dump($e->getMessage());
     }
 }
