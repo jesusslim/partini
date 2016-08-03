@@ -10,8 +10,8 @@
 namespace Partini\Router;
 
 use Partini\ApplicationInterface;
-use Partini\Http\Request;
-use Partini\Http\Response;
+use Partini\HttpContext\Context;
+use Partini\HttpContext\Output;
 
 class Router
 {
@@ -33,16 +33,14 @@ class Router
 
     public function handle(){
         //then dispatch
-        $req = new Request();
-        $uri = $this->cleanUri($req->getUri());
-        $route = $this->dispatch($req->getMethod(),$uri);
+        $ctx = $this->context->produce(Context::class);
+        $route = $this->dispatch($ctx->input()->method(),$this->cleanUri($ctx->input()->uriForRoute()));
         if($route !== false){
             //find
-            $this->context->mapData(Request::class,$req);
             //route handle
-            $response = $route->run($req);
-            if(! $response instanceof Response){
-                $response = new Response($response);
+            $response = $route->run($ctx);
+            if(! $response instanceof Output){
+                $response = is_null($response) ? $ctx->output() : $ctx->output()->body($response);
             }
             $response->send();
         }else{
