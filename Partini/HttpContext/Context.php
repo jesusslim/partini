@@ -16,30 +16,31 @@ class Context extends Injector
 {
 
     protected $KeysInside = array(
-        'input',
-        'output',
         Context::class,
-        'parent'
     );
+
+    protected $input;
+    protected $output;
+    protected $parent;
 
     public function __construct(ApplicationInterface $parent)
     {
-        $this->mapSingleton('input',Input::class);
-        $this->mapSingleton('output',Output::class);
         $this->mapData(Context::class,$this);
-        $this->mapData('parent',$parent);
+        $this->input = new Input();
+        $this->output = new Output($this);
+        $this->parent = $parent;
     }
 
     public function getParent(){
-        return $this->produce('parent');
+        return $this->parent;
     }
 
     public function input(){
-        return $this->produce('input');
+        return $this->input;
     }
 
     public function output(){
-        return $this->produce('output');
+        return $this->output;
     }
 
     public function stash($k,$v){
