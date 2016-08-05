@@ -48,4 +48,7 @@ class Config
         return $base_config;
     }
 
+    public static function read($key){
+        return Application::getInstance()->getConfig($key);
+    }
 }

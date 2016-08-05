@@ -45,7 +45,7 @@ class Router
             $response->send();
         }else{
             //not found
-            throw new RouteException("route $uri not found");
+            throw new RouteException('route '.$ctx->input()->uriForRoute().' not found');
         }
     }
 
