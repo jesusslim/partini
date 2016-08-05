@@ -48,8 +48,8 @@ class Route
         }
     }
 
-    public function mid(...$middlewares){
-        $this->midllewares = $middlewares;
+    public function mid($middlewares){
+        $this->midllewares = array_merge($this->midllewares,$middlewares);
     }
 
     public function getMethods(){

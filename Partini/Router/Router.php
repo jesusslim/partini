@@ -12,6 +12,7 @@ namespace Partini\Router;
 use Partini\ApplicationInterface;
 use Partini\HttpContext\Context;
 use Partini\HttpContext\Output;
+use Closure;
 
 class Router
 {
@@ -19,6 +20,8 @@ class Router
     protected $context;
 
     protected $routes;
+
+    protected $middleWareStack;
 
     public static $METHODS = array('GET','HEAD','POST','PUT','PATCH','DELETE','OPTIONS');
 
@@ -53,6 +56,9 @@ class Router
         $uri = empty($this->context->getConfig('BASE_PATH')) ? $this->cleanUri($uri) : $this->context->getConfig('BASE_PATH').$this->cleanUri($uri);
         $controller = empty($this->context->getConfig('CONTROLLER_NAME_SPACE')) ? $controller : (strpos($controller,$this->context->getConfig('CONTROLLER_NAME_SPACE')) !== false ? $controller : $this->context->getConfig('CONTROLLER_NAME_SPACE').$controller);
         $route = new Route($this,$methods,$uri,$action,$controller);
+        if(!empty($this->middleWareStack)){
+            $route->mid(end($this->middleWareStack));
+        }
         foreach ($methods as $method){
             $this->routes[$method][$uri] = $route;
         }
@@ -95,5 +101,11 @@ class Router
         if($uri[0] !== '/') $uri = '/'.$uri;
         if(substr($uri,-1) === '/') $uri = substr($uri,0,-1);
         return $uri;
+    }
+
+    public function group($middleWares,Closure $c){
+        $this->middleWareStack[] = empty($this->middleWareStack) ? $middleWares : array_merge(end($this->middleWareStack),$middleWares);
+        call_user_func($c);
+        array_pop($this->middleWareStack);
     }
 }

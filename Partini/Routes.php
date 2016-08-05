@@ -13,7 +13,7 @@ class Routes
 {
 
     const FUNC_ALLOWED = array(
-        'get','post','put','patch','delete','options','all'
+        'get','post','put','patch','delete','options','all','group'
     );
 
     public static function __callStatic($func, ...$args){
