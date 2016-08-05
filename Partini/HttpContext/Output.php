@@ -182,7 +182,7 @@ class Output
     }
 
     protected function cookieOutput(){
-        foreach ($this->cookies as $k => $arr){
+        if($this->cookies) foreach ($this->cookies as $k => $arr){
             $v = $arr[1];
             $path = empty($arr[3]) ? $this->context->getParent()->getConfig('COOKIE_PATH') : $arr[3];
             $domain = empty($arr[4]) ? $this->context->getParent()->getConfig('COOKIE_DOMAIN') : $arr[4];
