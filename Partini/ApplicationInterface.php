@@ -9,9 +9,13 @@
 namespace Partini;
 
 
-interface ApplicationInterface
+use Inject\InjectorInterface;
+
+interface ApplicationInterface extends InjectorInterface
 {
 
     public function version();
+
+    public function getConfig($key = null);
 
 }

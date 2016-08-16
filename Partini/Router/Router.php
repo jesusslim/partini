@@ -35,12 +35,14 @@ class Router
     }
 
     public function handle(){
-        //then dispatch
+        //dispatch
+        /** @var  \Partini\HttpContext\Context $ctx */
         $ctx = $this->context->produce(Context::class);
         $route = $this->dispatch($ctx->input()->method(),$this->cleanUri($ctx->input()->uriForRoute()));
         if($route !== false){
             //find
             //route handle
+            /** @var \Partini\Router\Route $route */
             $response = $route->run($ctx);
             if(! $response instanceof Output){
                 $response = is_null($response) ? $ctx->output() : $ctx->output()->body($response);
