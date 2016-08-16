@@ -48,8 +48,8 @@ class Route
         }
     }
 
-    public function mid(...$middlewares){
-        $this->midllewares = $middlewares;
+    public function mid($middlewares){
+        $this->midllewares = array_merge($this->midllewares,$middlewares);
     }
 
     public function getMethods(){
@@ -72,9 +72,9 @@ class Route
         return $this->controller;
     }
 
-    public function run($request){
+    public function run($ctx){
         $chains = new Chains($this->router->getContext());
-        return $chains->data($request)->chain($this->midllewares)->runWith(
+        return $chains->data($ctx)->chain($this->midllewares)->runWith(
             function(){
                 if($this->isClosure()){
                     return $this->router->getContext()->call($this->action);

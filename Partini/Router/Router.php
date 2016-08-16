@@ -10,8 +10,9 @@
 namespace Partini\Router;
 
 use Partini\ApplicationInterface;
-use Partini\Http\Request;
-use Partini\Http\Response;
+use Partini\HttpContext\Context;
+use Partini\HttpContext\Output;
+use Closure;
 
 class Router
 {
@@ -19,6 +20,8 @@ class Router
     protected $context;
 
     protected $routes;
+
+    protected $middleWareStack;
 
     public static $METHODS = array('GET','HEAD','POST','PUT','PATCH','DELETE','OPTIONS');
 
@@ -32,22 +35,22 @@ class Router
     }
 
     public function handle(){
-        //then dispatch
-        $req = new Request();
-        $uri = $this->cleanUri($req->getUri());
-        $route = $this->dispatch($req->getMethod(),$uri);
+        //dispatch
+        /** @var  \Partini\HttpContext\Context $ctx */
+        $ctx = $this->context->produce(Context::class);
+        $route = $this->dispatch($ctx->input()->method(),$this->cleanUri($ctx->input()->uriForRoute()));
         if($route !== false){
             //find
-            $this->context->mapData(Request::class,$req);
             //route handle
-            $response = $route->run($req);
-            if(! $response instanceof Response){
-                $response = new Response($response);
+            /** @var \Partini\Router\Route $route */
+            $response = $route->run($ctx);
+            if(! $response instanceof Output){
+                $response = is_null($response) ? $ctx->output() : $ctx->output()->body($response);
             }
             $response->send();
         }else{
             //not found
-            throw new RouteException("route $uri not found");
+            throw new RouteException('route '.$ctx->input()->uriForRoute().' not found');
         }
     }
 
@@ -55,6 +58,9 @@ class Router
         $uri = empty($this->context->getConfig('BASE_PATH')) ? $this->cleanUri($uri) : $this->context->getConfig('BASE_PATH').$this->cleanUri($uri);
         $controller = empty($this->context->getConfig('CONTROLLER_NAME_SPACE')) ? $controller : (strpos($controller,$this->context->getConfig('CONTROLLER_NAME_SPACE')) !== false ? $controller : $this->context->getConfig('CONTROLLER_NAME_SPACE').$controller);
         $route = new Route($this,$methods,$uri,$action,$controller);
+        if(!empty($this->middleWareStack)){
+            $route->mid(end($this->middleWareStack));
+        }
         foreach ($methods as $method){
             $this->routes[$method][$uri] = $route;
         }
@@ -97,5 +103,11 @@ class Router
         if($uri[0] !== '/') $uri = '/'.$uri;
         if(substr($uri,-1) === '/') $uri = substr($uri,0,-1);
         return $uri;
+    }
+
+    public function group($middleWares,Closure $c){
+        $this->middleWareStack[] = empty($this->middleWareStack) ? $middleWares : array_merge(end($this->middleWareStack),$middleWares);
+        call_user_func($c);
+        array_pop($this->middleWareStack);
     }
 }

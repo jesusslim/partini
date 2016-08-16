@@ -11,6 +11,7 @@ namespace Partini;
 
 use Inject\Injector;
 
+define('APP_PATH',dirname($_SERVER['SCRIPT_FILENAME']).'/');
 class Application extends Injector implements ApplicationInterface
 {
 
@@ -28,6 +29,8 @@ class Application extends Injector implements ApplicationInterface
         $this->mapData('config',new Config());
 
         $this->is_debug = $this->getConfig('APP_DEBUG') ? true : false;
+
+        spl_autoload_register('Partini\Application::autoload');
     }
 
     public function version(){
@@ -52,5 +55,20 @@ class Application extends Injector implements ApplicationInterface
 
     public static function getInstance(){
         return self::$instance;
+    }
+
+    public static function autoload($class) {
+        if(false !== strpos($class,'\\')){
+            $name           =   strstr($class, '\\', true);
+            if(in_array($name,array('Vendor')) || is_dir('Lib/'.$name)){
+                $path       =   'Lib/';
+            }else{
+                $path       =   APP_PATH;
+            }
+            $filename       =   $path . str_replace('\\', '/', $class) . '.php';
+            if(is_file($filename)) {
+                include $filename;
+            }
+        }
     }
 }

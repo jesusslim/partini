@@ -16,7 +16,14 @@ class Config
 
     public function __construct()
     {
-        $this->data = array();
+        $this->data = array(
+            //default
+
+            //cookie
+            'COOKIE_DOMAIN'         =>  '',      // Cookie有效域名
+            'COOKIE_PATH'           =>  '/',     // Cookie路径
+
+        );
     }
 
     public function add($data){
@@ -41,4 +48,7 @@ class Config
         return $base_config;
     }
 
+    public static function read($key){
+        return Application::getInstance()->getConfig($key);
+    }
 }
