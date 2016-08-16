@@ -3,7 +3,7 @@
 	"description": "a web app framework used inject",
 	"license": "MIT",
 	"keywords": ["inject"],
-	"version": "0.5.0",
+	"version": "0.6.0",
 	"authors": [
 		{
 			"name": "jesusslim",
